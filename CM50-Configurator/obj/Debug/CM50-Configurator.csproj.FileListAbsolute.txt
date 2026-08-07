@@ -1,0 +1,37 @@
+D:\VSProject\CM50-Configurator\CM50-Configurator\obj\Debug\CM50-Configurator.csproj.AssemblyReference.cache
+D:\VSProject\CM50-Configurator\CM50-Configurator\obj\Debug\CM50_Configurator.Properties.Resources.resources
+D:\VSProject\CM50-Configurator\CM50-Configurator\obj\Debug\CM50-Configurator.csproj.GenerateResource.cache
+D:\VSProject\CM50-Configurator\CM50-Configurator\obj\Debug\CM50-Configurator.csproj.CoreCompileInputs.cache
+D:\VSProject\CM50-Configurator\CM50-Configurator\bin\Debug\CM50-Configurator.exe.config
+D:\VSProject\CM50-Configurator\CM50-Configurator\bin\Debug\CM50-Configurator.exe
+D:\VSProject\CM50-Configurator\CM50-Configurator\bin\Debug\CM50-Configurator.pdb
+D:\VSProject\CM50-Configurator\CM50-Configurator\bin\Debug\Microsoft.Bcl.AsyncInterfaces.dll
+D:\VSProject\CM50-Configurator\CM50-Configurator\bin\Debug\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+D:\VSProject\CM50-Configurator\CM50-Configurator\bin\Debug\Microsoft.Extensions.Logging.Abstractions.dll
+D:\VSProject\CM50-Configurator\CM50-Configurator\bin\Debug\MySqlConnector.dll
+D:\VSProject\CM50-Configurator\CM50-Configurator\bin\Debug\Newtonsoft.Json.dll
+D:\VSProject\CM50-Configurator\CM50-Configurator\bin\Debug\System.Buffers.dll
+D:\VSProject\CM50-Configurator\CM50-Configurator\bin\Debug\System.Diagnostics.DiagnosticSource.dll
+D:\VSProject\CM50-Configurator\CM50-Configurator\bin\Debug\System.Memory.dll
+D:\VSProject\CM50-Configurator\CM50-Configurator\bin\Debug\System.Numerics.Vectors.dll
+D:\VSProject\CM50-Configurator\CM50-Configurator\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+D:\VSProject\CM50-Configurator\CM50-Configurator\bin\Debug\System.Threading.Tasks.Extensions.dll
+D:\VSProject\CM50-Configurator\CM50-Configurator\obj\Debug\CM50-Configurator.csproj.SuggestedBindingRedirects.cache
+D:\VSProject\CM50-Configurator\CM50-Configurator\obj\Debug\CM50-Configurator.exe.config
+D:\VSProject\CM50-Configurator\CM50-Configurator\obj\Debug\CM50-Con.DEB2ACC2.Up2Date
+D:\VSProject\CM50-Configurator\CM50-Configurator\obj\Debug\CM50-Configurator.exe
+D:\VSProject\CM50-Configurator\CM50-Configurator\obj\Debug\CM50-Configurator.pdb
+D:\VSProject\CM50-Configurator\CM50-Configurator\objVerifyBuild -nologo\CM50-Configurator.exe.config
+D:\VSProject\CM50-Configurator\CM50-Configurator\objVerifyBuild -nologo\CM50-Configurator.exe
+D:\VSProject\CM50-Configurator\CM50-Configurator\objVerifyBuild -nologo\CM50-Configurator.pdb
+D:\VSProject\CM50-Configurator\CM50-Configurator\objVerifyBuild -nologo\Microsoft.Bcl.AsyncInterfaces.dll
+D:\VSProject\CM50-Configurator\CM50-Configurator\objVerifyBuild -nologo\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+D:\VSProject\CM50-Configurator\CM50-Configurator\objVerifyBuild -nologo\Microsoft.Extensions.Logging.Abstractions.dll
+D:\VSProject\CM50-Configurator\CM50-Configurator\objVerifyBuild -nologo\MySqlConnector.dll
+D:\VSProject\CM50-Configurator\CM50-Configurator\objVerifyBuild -nologo\Newtonsoft.Json.dll
+D:\VSProject\CM50-Configurator\CM50-Configurator\objVerifyBuild -nologo\System.Buffers.dll
+D:\VSProject\CM50-Configurator\CM50-Configurator\objVerifyBuild -nologo\System.Diagnostics.DiagnosticSource.dll
+D:\VSProject\CM50-Configurator\CM50-Configurator\objVerifyBuild -nologo\System.Memory.dll
+D:\VSProject\CM50-Configurator\CM50-Configurator\objVerifyBuild -nologo\System.Numerics.Vectors.dll
+D:\VSProject\CM50-Configurator\CM50-Configurator\objVerifyBuild -nologo\System.Runtime.CompilerServices.Unsafe.dll
+D:\VSProject\CM50-Configurator\CM50-Configurator\objVerifyBuild -nologo\System.Threading.Tasks.Extensions.dll
