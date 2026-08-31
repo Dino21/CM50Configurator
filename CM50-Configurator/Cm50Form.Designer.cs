@@ -18,10 +18,14 @@ namespace CM50_Configurator
         private void InitializeComponent()
         {
             this.dgvCm50 = new System.Windows.Forms.DataGridView();
+            this.pnlFilter = new System.Windows.Forms.Panel();
+            this.lblFilter = new System.Windows.Forms.Label();
+            this.txtFilter = new System.Windows.Forms.TextBox();
             this.pnlActions = new System.Windows.Forms.Panel();
             this.lblStatus = new System.Windows.Forms.Label();
             this.btnDetail = new System.Windows.Forms.Button();
             this.btnAddNew = new System.Windows.Forms.Button();
+            this.btnBulkReplace = new System.Windows.Forms.Button();
             this.btnImportJson = new System.Windows.Forms.Button();
             this.btnReviewAndWrite = new System.Windows.Forms.Button();
             this.btnExportJson = new System.Windows.Forms.Button();
@@ -43,11 +47,40 @@ namespace CM50_Configurator
             this.dgvCm50.TabIndex = 0;
             this.dgvCm50.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvCm50_CellDoubleClick);
             //
+            // pnlFilter
+            //
+            this.pnlFilter.Controls.Add(this.txtFilter);
+            this.pnlFilter.Controls.Add(this.lblFilter);
+            this.pnlFilter.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlFilter.Location = new System.Drawing.Point(0, 0);
+            this.pnlFilter.Name = "pnlFilter";
+            this.pnlFilter.Size = new System.Drawing.Size(984, 36);
+            this.pnlFilter.TabIndex = 2;
+            //
+            // lblFilter
+            //
+            this.lblFilter.AutoSize = true;
+            this.lblFilter.Location = new System.Drawing.Point(12, 11);
+            this.lblFilter.Name = "lblFilter";
+            this.lblFilter.Size = new System.Drawing.Size(37, 13);
+            this.lblFilter.TabIndex = 0;
+            this.lblFilter.Text = "Filtro:";
+            //
+            // txtFilter
+            //
+            this.txtFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right));
+            this.txtFilter.Location = new System.Drawing.Point(55, 8);
+            this.txtFilter.Name = "txtFilter";
+            this.txtFilter.Size = new System.Drawing.Size(917, 20);
+            this.txtFilter.TabIndex = 1;
+            this.txtFilter.TextChanged += new System.EventHandler(this.txtFilter_TextChanged);
+            //
             // pnlActions
             //
             this.pnlActions.Controls.Add(this.lblStatus);
             this.pnlActions.Controls.Add(this.btnDetail);
             this.pnlActions.Controls.Add(this.btnAddNew);
+            this.pnlActions.Controls.Add(this.btnBulkReplace);
             this.pnlActions.Controls.Add(this.btnImportJson);
             this.pnlActions.Controls.Add(this.btnReviewAndWrite);
             this.pnlActions.Controls.Add(this.btnExportJson);
@@ -85,6 +118,16 @@ namespace CM50_Configurator
             this.btnAddNew.Text = "Nuova Riga...";
             this.btnAddNew.UseVisualStyleBackColor = true;
             this.btnAddNew.Click += new System.EventHandler(this.btnAddNew_Click);
+            //
+            // btnBulkReplace
+            //
+            this.btnBulkReplace.Location = new System.Drawing.Point(476, 8);
+            this.btnBulkReplace.Name = "btnBulkReplace";
+            this.btnBulkReplace.Size = new System.Drawing.Size(160, 27);
+            this.btnBulkReplace.TabIndex = 7;
+            this.btnBulkReplace.Text = "Sostituisci Codice...";
+            this.btnBulkReplace.UseVisualStyleBackColor = true;
+            this.btnBulkReplace.Click += new System.EventHandler(this.btnBulkReplace_Click);
             //
             // btnImportJson
             //
@@ -133,9 +176,11 @@ namespace CM50_Configurator
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(984, 611);
             this.Controls.Add(this.dgvCm50);
+            this.Controls.Add(this.pnlFilter);
             this.Controls.Add(this.pnlActions);
             this.MinimumSize = new System.Drawing.Size(700, 400);
             this.Name = "Cm50Form";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "CM50 Configurator - Configurazioni Master (cm50)";
             ((System.ComponentModel.ISupportInitialize)(this.dgvCm50)).EndInit();
             this.pnlActions.ResumeLayout(false);
@@ -146,10 +191,14 @@ namespace CM50_Configurator
         #endregion
 
         private System.Windows.Forms.DataGridView dgvCm50;
+        private System.Windows.Forms.Panel pnlFilter;
+        private System.Windows.Forms.Label lblFilter;
+        private System.Windows.Forms.TextBox txtFilter;
         private System.Windows.Forms.Panel pnlActions;
         private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.Button btnDetail;
         private System.Windows.Forms.Button btnAddNew;
+        private System.Windows.Forms.Button btnBulkReplace;
         private System.Windows.Forms.Button btnImportJson;
         private System.Windows.Forms.Button btnReviewAndWrite;
         private System.Windows.Forms.Button btnExportJson;

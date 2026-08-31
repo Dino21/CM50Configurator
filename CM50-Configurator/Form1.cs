@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using CM50_Configurator.Data;
 using CM50_Configurator.Models;
 using CM50_Configurator.Services;
 using CM50_Configurator.Support;
+using CM50_Configurator.Support.UI;
 
 namespace CM50_Configurator
 {
@@ -16,6 +18,10 @@ namespace CM50_Configurator
         private readonly DatabaseWriter _databaseWriter = new DatabaseWriter();
         private List<Cm50UserCustomization> _currentData = new List<Cm50UserCustomization>();
 
+        // Righe attualmente visualizzate in griglia (già filtrate e ordinate per codice prodotto),
+        // usate anche per l'export delle "righe filtrate".
+        private List<GridRow> _displayedRows = new List<GridRow>();
+
         // Istantanea presa subito dopo ogni "Carica da DB": confrontata con _currentData per capire
         // quali righe sono nuove o modificate al momento di "Scrivi su DB..." (vedi UserCustomizationDiff).
         private List<Cm50UserCustomization> _baseline = new List<Cm50UserCustomization>();
@@ -23,6 +29,8 @@ namespace CM50_Configurator
         public Form1()
         {
             InitializeComponent();
+            SesamiTheme.Apply(this);
+            SesamiTheme.AddHeaderBanner(this, "CM50 - Personalizzazioni Utente");
         }
 
         private void btnLoadFromDb_Click(object sender, EventArgs e)
@@ -82,6 +90,28 @@ namespace CM50_Configurator
             }
         }
 
+        private void btnBulkReplace_Click(object sender, EventArgs e)
+        {
+            if (_currentData.Count == 0)
+            {
+                MessageBox.Show(this, "Carica prima i dati dal database.",
+                    "Dati non disponibili", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            using (var form = new BulkCodeReplaceForm(typeof(Cm50UserCustomization), _currentData, "cm50usercustomization"))
+            {
+                if (form.ShowDialog(this) != DialogResult.OK || form.ReplacedCount == 0)
+                {
+                    return;
+                }
+
+                BindGrid(_currentData);
+                lblStatus.Text = $"Sostituiti {form.ReplacedCount} valori (non ancora scritti sul database). " +
+                    "Usa \"Scrivi su DB...\" per rivedere e confermare.";
+            }
+        }
+
         private void btnExportJson_Click(object sender, EventArgs e)
         {
             if (_currentData.Count == 0)
@@ -89,10 +119,41 @@ namespace CM50_Configurator
                 return;
             }
 
+            var menu = new ContextMenuStrip();
+            menu.Items.Add("Riga selezionata...", null, (s, ev) => ExportSelectedRow());
+            menu.Items.Add("Tabella intera...", null, (s, ev) => ExportRows(_currentData, "cm50usercustomization"));
+            menu.Items.Add("Righe filtrate (visualizzate)...", null, (s, ev) =>
+                ExportRows(_displayedRows.Select(r => r.Source).ToList(), "cm50usercustomization_filtrate"));
+
+            menu.Show(btnExportJson, new Point(0, btnExportJson.Height));
+        }
+
+        private void ExportSelectedRow()
+        {
+            var row = dgvUserCustomizations.CurrentRow?.DataBoundItem as GridRow;
+            if (row == null)
+            {
+                MessageBox.Show(this, "Seleziona prima una riga da esportare.",
+                    "Nessuna riga selezionata", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            ExportRows(new List<Cm50UserCustomization> { row.Source }, "cm50usercustomization_riga");
+        }
+
+        private void ExportRows(List<Cm50UserCustomization> items, string fileNamePrefix)
+        {
+            if (items.Count == 0)
+            {
+                MessageBox.Show(this, "Non ci sono righe da esportare.",
+                    "Nessuna riga", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
             using (var dialog = new SaveFileDialog
             {
                 Filter = "File JSON (*.json)|*.json",
-                FileName = $"cm50usercustomization_{DateTime.Now:yyyyMMdd_HHmmss}.json"
+                FileName = $"{fileNamePrefix}_{DateTime.Now:yyyyMMdd_HHmmss}.json"
             })
             {
                 if (dialog.ShowDialog(this) != DialogResult.OK)
@@ -102,8 +163,8 @@ namespace CM50_Configurator
 
                 try
                 {
-                    JsonExportService.ExportItems(_currentData, dialog.FileName);
-                    lblStatus.Text = $"Esportati {_currentData.Count} record in {dialog.FileName}";
+                    JsonExportService.ExportItems(items, dialog.FileName);
+                    lblStatus.Text = $"Esportati {items.Count} record in {dialog.FileName}";
                 }
                 catch (Exception ex)
                 {
@@ -225,6 +286,11 @@ namespace CM50_Configurator
             BindGrid(_currentData);
         }
 
+        private void txtFilter_TextChanged(object sender, EventArgs e)
+        {
+            BindGrid(_currentData);
+        }
+
         private void BindGrid(IEnumerable<Cm50UserCustomization> items)
         {
             var rows = items.Select(i => new GridRow
@@ -253,9 +319,13 @@ namespace CM50_Configurator
                 Lingua = i.DisplayLanguage,
                 SystemRate = i.SystemRate,
                 EcoTimeOut = i.EcoTimeOut
-            }).ToList();
+            })
+            .OrderBy(r => r.Prodotto, StringComparer.OrdinalIgnoreCase)
+            .ToList();
 
-            dgvUserCustomizations.DataSource = rows;
+            _displayedRows = GridFilter.Apply(rows, txtFilter.Text);
+
+            dgvUserCustomizations.DataSource = _displayedRows;
             dgvUserCustomizations.Columns["IdUserCustomization"].Visible = false;
             dgvUserCustomizations.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
         }

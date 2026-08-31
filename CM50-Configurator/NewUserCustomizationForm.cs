@@ -2,6 +2,7 @@ using System;
 using System.Windows.Forms;
 using CM50_Configurator.Models;
 using CM50_Configurator.Support;
+using CM50_Configurator.Support.UI;
 
 namespace CM50_Configurator
 {
@@ -17,6 +18,7 @@ namespace CM50_Configurator
         public NewUserCustomizationForm()
         {
             InitializeComponent();
+            SesamiTheme.Apply(this);
 
             _workingItem = new Cm50UserCustomization
             {

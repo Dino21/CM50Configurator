@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using CM50_Configurator.Services;
+using CM50_Configurator.Support.UI;
 
 namespace CM50_Configurator
 {
@@ -24,6 +25,7 @@ namespace CM50_Configurator
             _isNewMode = isNewMode;
 
             BuildUi();
+            SesamiTheme.Apply(this);
             Text = title;
             _propertyGrid.SelectedObject = item;
         }
@@ -44,6 +46,16 @@ namespace CM50_Configurator
             };
 
             var pnlButtons = new Panel { Dock = DockStyle.Bottom, Height = 50 };
+
+            // pnlButtons va aggiunto al form (e quindi assumere la sua larghezza definitiva tramite
+            // Dock.Bottom) PRIMA di aggiungergli i bottoni con Anchor Right: un controllo figlio
+            // ancorato a destra "cattura" la distanza dal bordo destro del parent nel momento in cui
+            // viene aggiunto ai suoi Controls, quindi se a quel momento pnlButtons non fosse ancora
+            // agganciato al form avrebbe ancora la larghezza di default (non quella reale, 520px),
+            // e il bottone finirebbe fuori dall'area visibile (riprodotto con "Chiudi" introvabile
+            // nei dettagli di ddmcm50/utmcm50/ltmcm50/feedercm50).
+            Controls.Add(_propertyGrid);
+            Controls.Add(pnlButtons);
 
             if (_isNewMode)
             {
@@ -93,9 +105,6 @@ namespace CM50_Configurator
                 pnlButtons.Controls.Add(btnExport);
                 pnlButtons.Controls.Add(btnClose);
             }
-
-            Controls.Add(_propertyGrid);
-            Controls.Add(pnlButtons);
         }
 
         private void BtnExport_Click(object sender, EventArgs e)

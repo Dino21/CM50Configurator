@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Forms;
 using CM50_Configurator.Data;
 using CM50_Configurator.Services;
+using CM50_Configurator.Support.UI;
 
 namespace CM50_Configurator
 {
@@ -13,8 +14,8 @@ namespace CM50_Configurator
     // mostrate né scritte.
     public partial class ReviewChangesForm : Form
     {
-        private static readonly Color NewRowColor = Color.FromArgb(214, 255, 214);
-        private static readonly Color ModifiedRowColor = Color.FromArgb(255, 249, 196);
+        private static readonly Color NewRowColor = SesamiTheme.NewRowColor;
+        private static readonly Color ModifiedRowColor = SesamiTheme.ModifiedRowColor;
 
         private readonly List<UserCustomizationDiff.PendingChange> _pending;
         private readonly DatabaseWriter _writer;
@@ -24,6 +25,7 @@ namespace CM50_Configurator
         public ReviewChangesForm(List<UserCustomizationDiff.PendingChange> pending, DatabaseWriter writer)
         {
             InitializeComponent();
+            SesamiTheme.Apply(this);
 
             _pending = pending;
             _writer = writer;

@@ -6,14 +6,15 @@ using System.Windows.Forms;
 using CM50_Configurator.Data;
 using CM50_Configurator.Models;
 using CM50_Configurator.Services;
+using CM50_Configurator.Support.UI;
 
 namespace CM50_Configurator
 {
     // Come ReviewChangesForm, ma per la tabella cm50.
     public partial class Cm50ReviewChangesForm : Form
     {
-        private static readonly Color NewRowColor = Color.FromArgb(214, 255, 214);
-        private static readonly Color ModifiedRowColor = Color.FromArgb(255, 249, 196);
+        private static readonly Color NewRowColor = SesamiTheme.NewRowColor;
+        private static readonly Color ModifiedRowColor = SesamiTheme.ModifiedRowColor;
 
         private readonly List<Cm50Diff.PendingChange> _pending;
         private readonly DatabaseWriter _writer;
@@ -23,6 +24,7 @@ namespace CM50_Configurator
         public Cm50ReviewChangesForm(List<Cm50Diff.PendingChange> pending, DatabaseWriter writer)
         {
             InitializeComponent();
+            SesamiTheme.Apply(this);
 
             _pending = pending;
             _writer = writer;

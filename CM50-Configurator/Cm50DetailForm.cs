@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using CM50_Configurator.Models;
 using CM50_Configurator.Services;
 using CM50_Configurator.Support;
+using CM50_Configurator.Support.UI;
 
 namespace CM50_Configurator
 {
@@ -13,6 +14,7 @@ namespace CM50_Configurator
         public Cm50DetailForm(Cm50 item)
         {
             InitializeComponent();
+            SesamiTheme.Apply(this);
 
             _item = item ?? throw new ArgumentNullException(nameof(item));
 

@@ -2,9 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 using CM50_Configurator.Data;
 using CM50_Configurator.Services;
+using CM50_Configurator.Support;
+using CM50_Configurator.Support.UI;
 
 namespace CM50_Configurator
 {
@@ -23,10 +26,19 @@ namespace CM50_Configurator
         private readonly Func<T, T> _clone;
         private readonly SimpleTableConfig<T> _writerConfig;
 
+        // Proprietà "Code" del modello T (se presente), usata per ordinare sempre la griglia per
+        // codice, coerentemente con Form1/Cm50Form.
+        private static readonly PropertyInfo CodeProperty = typeof(T).GetProperty("Code");
+
         private List<T> _currentData = new List<T>();
         private List<T> _baseline = new List<T>();
 
+        // Righe attualmente visualizzate in griglia (già filtrate e ordinate per codice), usate
+        // anche per l'export delle "righe filtrate".
+        private List<T> _displayedRows = new List<T>();
+
         private DataGridView _grid;
+        private TextBox _txtFilter;
         private Button _btnExportJson;
         private Label _lblStatus;
 
@@ -49,6 +61,32 @@ namespace CM50_Configurator
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(984, 611);
             MinimumSize = new Size(700, 400);
+            StartPosition = FormStartPosition.CenterScreen;
+
+            // Tutte le Controls.Add del form vanno raggruppate in un unico SuspendLayout/ResumeLayout
+            // (come fa il Designer per Cm50Form/Form1): senza, ogni Controls.Add scatena subito un
+            // layout parziale, e quando SesamiTheme.AddHeaderBanner aggiunge un secondo pannello
+            // Dock=Top DOPO che la griglia ha già "fissato" la sua area in un passaggio precedente,
+            // il pannello del filtro finisce sovrapposto alla griglia invece di impilarcisi sopra.
+            SuspendLayout();
+
+            // Width impostata esplicitamente (uguale al form) perché con SuspendLayout attivo
+            // Dock=Top non assegna ancora a pnlFilter la sua larghezza reale: txtFilter, ancorato
+            // anche a destra, cattura la distanza dal bordo nel momento in cui viene aggiunto ai
+            // Controls del parent, quindi senza questa Width finirebbe fuori dall'area visibile -
+            // lo stesso bug che rendeva introvabile il bottone "Chiudi" nei dettagli delle tabelle
+            // semplici.
+            var pnlFilter = new Panel { Dock = DockStyle.Top, Height = 36, Width = ClientSize.Width };
+            var lblFilter = new Label { Text = "Filtro:", AutoSize = true, Location = new Point(12, 11) };
+            _txtFilter = new TextBox
+            {
+                Location = new Point(55, 8),
+                Size = new Size(917, 20),
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+            };
+            _txtFilter.TextChanged += (s, e) => RefreshGrid();
+            pnlFilter.Controls.Add(lblFilter);
+            pnlFilter.Controls.Add(_txtFilter);
 
             _grid = new DataGridView
             {
@@ -71,6 +109,9 @@ namespace CM50_Configurator
             var btnDetail = new Button { Text = "Dettaglio / Modifica...", Location = new Point(316, 8), Size = new Size(150, 27) };
             btnDetail.Click += (s, e) => OpenDetail(_grid.CurrentRow);
 
+            var btnBulkReplace = new Button { Text = "Sostituisci Codice...", Location = new Point(476, 8), Size = new Size(160, 27) };
+            btnBulkReplace.Click += BtnBulkReplace_Click;
+
             var btnImportJson = new Button { Text = "Importa JSON...", Location = new Point(12, 41), Size = new Size(160, 27) };
             btnImportJson.Click += BtnImportJson_Click;
 
@@ -91,13 +132,20 @@ namespace CM50_Configurator
             pnlActions.Controls.Add(btnLoad);
             pnlActions.Controls.Add(btnAddNew);
             pnlActions.Controls.Add(btnDetail);
+            pnlActions.Controls.Add(btnBulkReplace);
             pnlActions.Controls.Add(btnImportJson);
             pnlActions.Controls.Add(btnReviewAndWrite);
             pnlActions.Controls.Add(_btnExportJson);
             pnlActions.Controls.Add(_lblStatus);
 
             Controls.Add(_grid);
+            Controls.Add(pnlFilter);
             Controls.Add(pnlActions);
+
+            ResumeLayout(false);
+
+            SesamiTheme.Apply(this);
+            SesamiTheme.AddHeaderBanner(this, $"CM50 - {_entityName}");
         }
 
         private void BtnLoadFromDb_Click(object sender, EventArgs e)
@@ -140,6 +188,28 @@ namespace CM50_Configurator
             }
         }
 
+        private void BtnBulkReplace_Click(object sender, EventArgs e)
+        {
+            if (_currentData.Count == 0)
+            {
+                MessageBox.Show(this, "Carica prima i dati dal database.",
+                    "Dati non disponibili", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            using (var form = new BulkCodeReplaceForm(typeof(T), _currentData, _entityName))
+            {
+                if (form.ShowDialog(this) != DialogResult.OK || form.ReplacedCount == 0)
+                {
+                    return;
+                }
+
+                RefreshGrid();
+                _lblStatus.Text = $"Sostituiti {form.ReplacedCount} valori (non ancora scritti sul database). " +
+                    "Usa \"Scrivi su DB...\" per rivedere e confermare.";
+            }
+        }
+
         private void BtnExportJson_Click(object sender, EventArgs e)
         {
             if (_currentData.Count == 0)
@@ -147,10 +217,42 @@ namespace CM50_Configurator
                 return;
             }
 
+            string prefix = typeof(T).Name.ToLowerInvariant();
+
+            var menu = new ContextMenuStrip();
+            menu.Items.Add("Riga selezionata...", null, (s, ev) => ExportSelectedRow(prefix));
+            menu.Items.Add("Tabella intera...", null, (s, ev) => ExportRows(_currentData, prefix));
+            menu.Items.Add("Righe filtrate (visualizzate)...", null, (s, ev) => ExportRows(_displayedRows, $"{prefix}_filtrate"));
+
+            menu.Show(_btnExportJson, new Point(0, _btnExportJson.Height));
+        }
+
+        private void ExportSelectedRow(string fileNamePrefix)
+        {
+            T item = _grid.CurrentRow?.DataBoundItem as T;
+            if (item == null)
+            {
+                MessageBox.Show(this, "Seleziona prima una riga da esportare.",
+                    "Nessuna riga selezionata", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            ExportRows(new List<T> { item }, $"{fileNamePrefix}_riga");
+        }
+
+        private void ExportRows(List<T> items, string fileNamePrefix)
+        {
+            if (items.Count == 0)
+            {
+                MessageBox.Show(this, "Non ci sono righe da esportare.",
+                    "Nessuna riga", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
             using (var dialog = new SaveFileDialog
             {
                 Filter = "File JSON (*.json)|*.json",
-                FileName = $"{typeof(T).Name.ToLowerInvariant()}_{DateTime.Now:yyyyMMdd_HHmmss}.json"
+                FileName = $"{fileNamePrefix}_{DateTime.Now:yyyyMMdd_HHmmss}.json"
             })
             {
                 if (dialog.ShowDialog(this) != DialogResult.OK)
@@ -160,8 +262,8 @@ namespace CM50_Configurator
 
                 try
                 {
-                    JsonExportService.ExportItems(_currentData, dialog.FileName);
-                    _lblStatus.Text = $"Esportati {_currentData.Count} record in {dialog.FileName}";
+                    JsonExportService.ExportItems(items, dialog.FileName);
+                    _lblStatus.Text = $"Esportati {items.Count} record in {dialog.FileName}";
                 }
                 catch (Exception ex)
                 {
@@ -267,8 +369,16 @@ namespace CM50_Configurator
 
         private void RefreshGrid()
         {
+            IEnumerable<T> sorted = _currentData;
+            if (CodeProperty != null)
+            {
+                sorted = _currentData.OrderBy(item => CodeProperty.GetValue(item) as string, StringComparer.OrdinalIgnoreCase);
+            }
+
+            _displayedRows = GridFilter.Apply(sorted, _txtFilter.Text);
+
             _grid.DataSource = null;
-            _grid.DataSource = _currentData;
+            _grid.DataSource = _displayedRows;
 
             if (_grid.Columns.Contains(_idPropertyName))
             {

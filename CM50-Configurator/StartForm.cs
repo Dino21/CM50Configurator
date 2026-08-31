@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using CM50_Configurator.Data;
 using CM50_Configurator.Models;
+using CM50_Configurator.Support.UI;
 
 namespace CM50_Configurator
 {
@@ -59,6 +60,9 @@ namespace CM50_Configurator
         public StartForm()
         {
             InitializeComponent();
+
+            SesamiTheme.Apply(this);
+            SesamiTheme.AddHeaderBanner(this, "Seleziona il modulo di lavoro", showBackToMenu: false);
 
             lstModules.DataSource = _modules;
             lstModules.SelectedIndexChanged += (s, e) => UpdateDescription();

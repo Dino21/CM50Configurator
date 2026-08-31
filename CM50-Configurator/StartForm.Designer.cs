@@ -26,7 +26,7 @@ namespace CM50_Configurator
             // lblTitle
             //
             this.lblTitle.AutoSize = true;
-            this.lblTitle.Location = new System.Drawing.Point(12, 15);
+            this.lblTitle.Location = new System.Drawing.Point(12, 79);
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(211, 13);
             this.lblTitle.TabIndex = 0;
@@ -36,7 +36,7 @@ namespace CM50_Configurator
             //
             this.lstModules.FormattingEnabled = true;
             this.lstModules.ItemHeight = 15;
-            this.lstModules.Location = new System.Drawing.Point(12, 35);
+            this.lstModules.Location = new System.Drawing.Point(12, 99);
             this.lstModules.Name = "lstModules";
             this.lstModules.Size = new System.Drawing.Size(460, 124);
             this.lstModules.TabIndex = 1;
@@ -44,7 +44,7 @@ namespace CM50_Configurator
             //
             // lblDescription
             //
-            this.lblDescription.Location = new System.Drawing.Point(12, 168);
+            this.lblDescription.Location = new System.Drawing.Point(12, 232);
             this.lblDescription.Name = "lblDescription";
             this.lblDescription.Size = new System.Drawing.Size(460, 60);
             this.lblDescription.TabIndex = 2;
@@ -52,7 +52,7 @@ namespace CM50_Configurator
             // btnOpen
             //
             this.btnOpen.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
-            this.btnOpen.Location = new System.Drawing.Point(352, 236);
+            this.btnOpen.Location = new System.Drawing.Point(352, 300);
             this.btnOpen.Name = "btnOpen";
             this.btnOpen.Size = new System.Drawing.Size(120, 27);
             this.btnOpen.TabIndex = 3;
@@ -64,7 +64,7 @@ namespace CM50_Configurator
             //
             this.AcceptButton = this.btnOpen;
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(484, 275);
+            this.ClientSize = new System.Drawing.Size(484, 339);
             this.Controls.Add(this.btnOpen);
             this.Controls.Add(this.lblDescription);
             this.Controls.Add(this.lstModules);

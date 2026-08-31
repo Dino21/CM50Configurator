@@ -12,6 +12,7 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <ApplicationIcon>Assets\sesami-app-icon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -114,6 +115,9 @@
     <Compile Include="SimpleEntityDetailForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="BulkCodeReplaceForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="SimpleTableListForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -136,6 +140,8 @@
     <Compile Include="Models\UtmCm50.cs" />
     <Compile Include="Models\LtmCm50.cs" />
     <Compile Include="Models\FeederCm50.cs" />
+    <Compile Include="Support\UI\SesamiTheme.cs" />
+    <Compile Include="Support\GridFilter.cs" />
     <Compile Include="Support\PropertyOrderAttribute.cs" />
     <Compile Include="Support\OrderedExpandableObjectConverter.cs" />
     <Compile Include="Support\ReferenceDataCache.cs" />
@@ -184,6 +190,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\sesami-logo-2c-rgb-neg.png" />
+    <EmbeddedResource Include="Assets\NeueHaasUnicaPro-Regular.ttf" />
+    <EmbeddedResource Include="Assets\NeueHaasUnicaPro-Bold.ttf" />
+    <Content Include="Assets\sesami-app-icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

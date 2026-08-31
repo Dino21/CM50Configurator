@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using CM50_Configurator.Support.UI;
 
 namespace CM50_Configurator
 {
@@ -17,13 +18,30 @@ namespace CM50_Configurator
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            using (var start = new StartForm())
+            bool backToMenu;
+            do
             {
-                if (start.ShowDialog() == DialogResult.OK && start.SelectedFormFactory != null)
+                backToMenu = false;
+
+                using (var start = new StartForm())
                 {
-                    Application.Run(start.SelectedFormFactory());
+                    if (start.ShowDialog() != DialogResult.OK || start.SelectedFormFactory == null)
+                    {
+                        break;
+                    }
+
+                    using (Form module = start.SelectedFormFactory())
+                    {
+                        Application.Run(module);
+
+                        // Il bottone "Menu principale" nell'header del modulo chiude il form con
+                        // questo DialogResult per chiedere di ri-mostrare lo StartForm invece di
+                        // terminare l'applicazione (vedi SesamiTheme.AddHeaderBanner).
+                        backToMenu = module.DialogResult == SesamiTheme.BackToMenuResult;
+                    }
                 }
             }
+            while (backToMenu);
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using CM50_Configurator.Data;
 using CM50_Configurator.Services;
+using CM50_Configurator.Support.UI;
 
 namespace CM50_Configurator
 {
@@ -13,8 +14,8 @@ namespace CM50_Configurator
     // dato che qui non c'è alcuna struttura annidata da conoscere in anticipo.
     public class SimpleTableReviewForm<T> : Form
     {
-        private static readonly Color NewRowColor = Color.FromArgb(214, 255, 214);
-        private static readonly Color ModifiedRowColor = Color.FromArgb(255, 249, 196);
+        private static readonly Color NewRowColor = SesamiTheme.NewRowColor;
+        private static readonly Color ModifiedRowColor = SesamiTheme.ModifiedRowColor;
 
         private readonly System.Collections.Generic.List<SimpleEntityDiff.PendingChange<T>> _pending;
         private readonly SimpleTableConfig<T> _config;
@@ -29,6 +30,7 @@ namespace CM50_Configurator
 
             BuildUi(entityName);
             BindGrid();
+            SesamiTheme.Apply(this);
         }
 
         private void BuildUi(string entityName)
@@ -44,7 +46,7 @@ namespace CM50_Configurator
                 Dock = DockStyle.Top,
                 Padding = new Padding(12, 12, 12, 8),
                 Height = 34,
-                Text = "Verde = riga nuova · Giallo = riga modificata. Le righe invariate non sono mostrate."
+                Text = "Aqua = riga nuova · Ambra = riga modificata. Le righe invariate non sono mostrate."
             };
 
             _grid = new DataGridView
@@ -58,6 +60,11 @@ namespace CM50_Configurator
             };
 
             var pnlButtons = new Panel { Dock = DockStyle.Bottom, Height = 50 };
+            // pnlButtons va agganciato al form PRIMA di aggiungergli bottoni ancorati a destra: si
+            // veda il commento in SimpleEntityDetailForm.BuildUi per il dettaglio del problema.
+            Controls.Add(_grid);
+            Controls.Add(pnlButtons);
+            Controls.Add(lblLegend);
 
             var btnWrite = new Button
             {
@@ -81,10 +88,6 @@ namespace CM50_Configurator
             CancelButton = btnCancel;
             pnlButtons.Controls.Add(btnWrite);
             pnlButtons.Controls.Add(btnCancel);
-
-            Controls.Add(_grid);
-            Controls.Add(pnlButtons);
-            Controls.Add(lblLegend);
         }
 
         private void BindGrid()

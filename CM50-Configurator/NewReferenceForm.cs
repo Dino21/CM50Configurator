@@ -1,6 +1,7 @@
 using System;
 using System.Windows.Forms;
 using CM50_Configurator.Support;
+using CM50_Configurator.Support.UI;
 
 namespace CM50_Configurator
 {
@@ -14,6 +15,7 @@ namespace CM50_Configurator
         public NewReferenceForm(object item, string title, string introMessage)
         {
             InitializeComponent();
+            SesamiTheme.Apply(this);
 
             _item = item ?? throw new ArgumentNullException(nameof(item));
             Text = title;
