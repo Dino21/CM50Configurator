@@ -2,13 +2,14 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using CM50_Configurator.Services;
+using CM50_Configurator.Support;
 using CM50_Configurator.Support.UI;
 
 namespace CM50_Configurator
 {
     // Finestra generica per visualizzare/modificare (isNewMode=false, un solo bottone "Chiudi" +
     // "Esporta JSON") o creare da zero (isNewMode=true, "Crea"/"Annulla") una riga di una tabella
-    // "semplice" senza riferimenti (ddmcm50, utmcm50, ltmcm50, feedercm50). Essendo generica, la UI
+    // "semplice" (ddmcm50, utmcm50, ltmcm50, feedercm50, cm50excqa). Essendo generica, la UI
     // si costruisce in codice invece che in un Designer.cs separato (il designer visuale di VS non
     // supporta form generiche).
     public class SimpleEntityDetailForm<T> : Form where T : class
@@ -66,7 +67,7 @@ namespace CM50_Configurator
                     Location = new Point(248, 11),
                     Anchor = AnchorStyles.Top | AnchorStyles.Right
                 };
-                btnCreate.Click += (s, e) => { Confirmed = true; DialogResult = DialogResult.OK; Close(); };
+                btnCreate.Click += BtnCreate_Click;
 
                 var btnCancel = new Button
                 {
@@ -105,6 +106,23 @@ namespace CM50_Configurator
                 pnlButtons.Controls.Add(btnExport);
                 pnlButtons.Controls.Add(btnClose);
             }
+        }
+
+        // Blocca la creazione se manca un campo marcato [RequiredField] (es. Prodotto/Cliente su
+        // cm50excqa); per le tabelle senza campi obbligatori non cambia nulla.
+        private void BtnCreate_Click(object sender, EventArgs e)
+        {
+            string missing = RequiredFieldValidator.FindMissingRequiredField(_item);
+            if (missing != null)
+            {
+                MessageBox.Show(this, missing, "Campi obbligatori mancanti",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            Confirmed = true;
+            DialogResult = DialogResult.OK;
+            Close();
         }
 
         private void BtnExport_Click(object sender, EventArgs e)

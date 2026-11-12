@@ -140,6 +140,7 @@
     <Compile Include="Models\UtmCm50.cs" />
     <Compile Include="Models\LtmCm50.cs" />
     <Compile Include="Models\FeederCm50.cs" />
+    <Compile Include="Models\Cm50ExCqa.cs" />
     <Compile Include="Support\UI\SesamiTheme.cs" />
     <Compile Include="Support\GridFilter.cs" />
     <Compile Include="Support\PropertyOrderAttribute.cs" />
@@ -164,6 +165,7 @@
     <Compile Include="Data\UtmCm50Repository.cs" />
     <Compile Include="Data\LtmCm50Repository.cs" />
     <Compile Include="Data\FeederCm50Repository.cs" />
+    <Compile Include="Data\Cm50ExCqaRepository.cs" />
     <Compile Include="Services\JsonExportService.cs" />
     <Compile Include="Services\JsonImportService.cs" />
     <Compile Include="Services\UserCustomizationDiff.cs" />

@@ -52,7 +52,15 @@ namespace CM50_Configurator
                     "feedercm50", nameof(FeederCm50.IdCfg),
                     () => new FeederCm50Repository().GetAll(),
                     x => x.IdCfg, x => x.Clone(),
-                    FeederCm50Repository.CreateWriterConfig()))
+                    FeederCm50Repository.CreateWriterConfig())),
+            new WorkModule(
+                "CM50 - Parametri ExCQA",
+                "Consultazione, modifica ed esportazione/importazione JSON dei parametri ExCQA per Prodotto/Cliente (cm50excqa).",
+                () => new SimpleTableListForm<Cm50ExCqa>(
+                    "cm50excqa", nameof(Cm50ExCqa.Id),
+                    () => new Cm50ExCqaRepository().GetAllWithReferences(),
+                    x => x.Id, x => x.Clone(),
+                    Cm50ExCqaRepository.CreateWriterConfig()))
         };
 
         public Func<Form> SelectedFormFactory { get; private set; }

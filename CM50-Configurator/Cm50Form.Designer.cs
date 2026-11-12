@@ -26,6 +26,7 @@ namespace CM50_Configurator
             this.btnDetail = new System.Windows.Forms.Button();
             this.btnAddNew = new System.Windows.Forms.Button();
             this.btnBulkReplace = new System.Windows.Forms.Button();
+            this.btnDuplicate = new System.Windows.Forms.Button();
             this.btnImportJson = new System.Windows.Forms.Button();
             this.btnReviewAndWrite = new System.Windows.Forms.Button();
             this.btnExportJson = new System.Windows.Forms.Button();
@@ -81,6 +82,7 @@ namespace CM50_Configurator
             this.pnlActions.Controls.Add(this.btnDetail);
             this.pnlActions.Controls.Add(this.btnAddNew);
             this.pnlActions.Controls.Add(this.btnBulkReplace);
+            this.pnlActions.Controls.Add(this.btnDuplicate);
             this.pnlActions.Controls.Add(this.btnImportJson);
             this.pnlActions.Controls.Add(this.btnReviewAndWrite);
             this.pnlActions.Controls.Add(this.btnExportJson);
@@ -128,6 +130,16 @@ namespace CM50_Configurator
             this.btnBulkReplace.Text = "Sostituisci Codice...";
             this.btnBulkReplace.UseVisualStyleBackColor = true;
             this.btnBulkReplace.Click += new System.EventHandler(this.btnBulkReplace_Click);
+            //
+            // btnDuplicate
+            //
+            this.btnDuplicate.Location = new System.Drawing.Point(648, 8);
+            this.btnDuplicate.Name = "btnDuplicate";
+            this.btnDuplicate.Size = new System.Drawing.Size(130, 27);
+            this.btnDuplicate.TabIndex = 8;
+            this.btnDuplicate.Text = "Duplica Riga...";
+            this.btnDuplicate.UseVisualStyleBackColor = true;
+            this.btnDuplicate.Click += new System.EventHandler(this.btnDuplicate_Click);
             //
             // btnImportJson
             //
@@ -199,6 +211,7 @@ namespace CM50_Configurator
         private System.Windows.Forms.Button btnDetail;
         private System.Windows.Forms.Button btnAddNew;
         private System.Windows.Forms.Button btnBulkReplace;
+        private System.Windows.Forms.Button btnDuplicate;
         private System.Windows.Forms.Button btnImportJson;
         private System.Windows.Forms.Button btnReviewAndWrite;
         private System.Windows.Forms.Button btnExportJson;

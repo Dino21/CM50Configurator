@@ -15,17 +15,32 @@ namespace CM50_Configurator
 
         public Cm50UserCustomization NewItem { get; private set; }
 
-        public NewUserCustomizationForm()
+        public NewUserCustomizationForm() : this(null)
+        {
+        }
+
+        // template != null: "Duplica Riga" - parte da una copia della riga indicata (nuovo id), con
+        // Prodotto e Cliente già selezionati nelle tendine.
+        public NewUserCustomizationForm(Cm50UserCustomization template)
         {
             InitializeComponent();
             SesamiTheme.Apply(this);
 
-            _workingItem = new Cm50UserCustomization
+            if (template != null)
             {
-                SystemRate = 7,
-                RefBanks = new string[4],
-                FitnessBanks = new int[4]
-            };
+                _workingItem = template.Clone();
+                _workingItem.IdUserCustomization = 0;
+                Text = "Duplica Configurazione";
+            }
+            else
+            {
+                _workingItem = new Cm50UserCustomization
+                {
+                    SystemRate = 7,
+                    RefBanks = new string[4],
+                    FitnessBanks = new int[4]
+                };
+            }
 
             cboProduct.DataSource = ReferenceDataCache.Products;
             cboProduct.SelectedIndexChanged += (s, e) =>
@@ -42,6 +57,14 @@ namespace CM50_Configurator
                 propertyGrid.Refresh();
             };
             cboClient.SelectedIndex = -1;
+
+            // Va fatto dopo i SelectedIndex = -1 (che azzerano Product/Client): la tendina trova la
+            // voce corrispondente tramite Equals per id (vedi Cm50ProdCode/Client).
+            if (template != null)
+            {
+                cboProduct.SelectedItem = template.Product;
+                cboClient.SelectedItem = template.Client;
+            }
 
             propertyGrid.SelectedObject = _workingItem;
         }

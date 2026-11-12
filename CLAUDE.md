@@ -5,8 +5,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project overview
 
 CM50 Configurator is a Windows Forms desktop app (Sesami) for browsing and editing the CM50 device
-configuration tables in a MySQL database (`cm50`, `cm50usercustomization`, and the "collaudo" tables
-`ddmcm50`/`utmcm50`/`ltmcm50`/`feedercm50`). Target framework is .NET Framework 4.8, classic
+configuration tables in a MySQL database (`cm50`, `cm50usercustomization`, the "collaudo" tables
+`ddmcm50`/`utmcm50`/`ltmcm50`/`feedercm50`, and `cm50excqa`). Target framework is .NET Framework 4.8, classic
 (non-SDK-style) csproj.
 
 ## Build & run
@@ -51,6 +51,14 @@ same as `App.config` itself.
   parameterized per entity via a `SimpleTableConfig<T>` built by each `*Repository.CreateWriterConfig()`.
   These forms build their UI in code (`BuildUi()`) rather than a Designer.cs, because the VS designer
   doesn't support generic forms.
+- `cm50excqa` also uses the generic set even though it has two FKs (`idProduct` → `cm50prodcode`,
+  `idClient` → `client`): both are select-only (never created), via `ProductReferenceConverter` /
+  `ClientReferenceConverter` (exclusive dropdown over `ReferenceDataCache`), `[RequiredField]` checked by
+  `SimpleEntityDetailForm` on "Crea", and id-based `Equals` on `Client`/`Cm50ProdCode` so
+  `SimpleEntityDiff` doesn't flag a row just because the reference is a different instance.
+  `Cm50ExCqaRepository.GetAllWithReferences()` refreshes Products/Clients in the cache on every load.
+  Nullable DB columns map to `int?`/`bool?` and model initializers mirror the table's `DEFAULT`s, since
+  `SimpleTableWriter` always writes every column.
 
 `cm50` references DD/Asset/CDF by **code** (string); `cm50usercustomization` references the same
 reference tables by **id**. Don't conflate the two when touching queries or writers.
@@ -73,7 +81,9 @@ commits in its own transaction, so one bad row doesn't block the rest of a batch
 Every module follows the same cycle: Carica da DB / Importa JSON populates an in-memory `List<T>`
 (`_currentData`) and clones a `_baseline` snapshot → `Cm50Diff` / `UserCustomizationDiff` /
 `SimpleEntityDiff` diff current-vs-baseline → a review form shows only new/changed rows (color-coded) →
-explicit "Scrivi su DB" commits, "Annulla" discards. Nothing touches the database before that final
+explicit "Scrivi su DB" commits, "Annulla" discards. "Duplica Riga..." (all list forms) clones the selected
+row with id reset to 0 and opens it in the create dialog (`New*Form(template)` / `SimpleEntityDetailForm`
+in new mode), so it shows up as "Nuovo" in review. Nothing touches the database before that final
 confirmation — bulk operations (JSON import, "Sostituisci Codice...") only ever mutate `_currentData`.
 
 `BulkCodeReplaceForm` is fully generic: it offers a field for bulk replace only when

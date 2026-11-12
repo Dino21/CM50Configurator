@@ -11,8 +11,8 @@ using CM50_Configurator.Support.UI;
 
 namespace CM50_Configurator
 {
-    // Form generica per le tabelle "semplici" senza chiavi esterne (ddmcm50, utmcm50, ltmcm50,
-    // feedercm50): stessa UX di Form1/Cm50Form (Carica da DB, Nuova Riga, Dettaglio/Modifica,
+    // Form generica per le tabelle "semplici" (ddmcm50, utmcm50, ltmcm50, feedercm50, e cm50excqa,
+    // le cui chiavi esterne Prodotto/Cliente si scelgono solo tra quelle esistenti): stessa UX di Form1/Cm50Form (Carica da DB, Nuova Riga, Dettaglio/Modifica,
     // Importa/Esporta JSON, Scrivi su DB con revisione colorata), ma senza bisogno di gestire
     // riferimenti. Essendo generica, la UI si costruisce in codice invece che in un Designer.cs
     // separato (il designer visuale di VS non supporta form generiche); la griglia principale
@@ -112,6 +112,9 @@ namespace CM50_Configurator
             var btnBulkReplace = new Button { Text = "Sostituisci Codice...", Location = new Point(476, 8), Size = new Size(160, 27) };
             btnBulkReplace.Click += BtnBulkReplace_Click;
 
+            var btnDuplicate = new Button { Text = "Duplica Riga...", Location = new Point(648, 8), Size = new Size(130, 27) };
+            btnDuplicate.Click += BtnDuplicate_Click;
+
             var btnImportJson = new Button { Text = "Importa JSON...", Location = new Point(12, 41), Size = new Size(160, 27) };
             btnImportJson.Click += BtnImportJson_Click;
 
@@ -133,6 +136,7 @@ namespace CM50_Configurator
             pnlActions.Controls.Add(btnAddNew);
             pnlActions.Controls.Add(btnDetail);
             pnlActions.Controls.Add(btnBulkReplace);
+            pnlActions.Controls.Add(btnDuplicate);
             pnlActions.Controls.Add(btnImportJson);
             pnlActions.Controls.Add(btnReviewAndWrite);
             pnlActions.Controls.Add(_btnExportJson);
@@ -185,6 +189,35 @@ namespace CM50_Configurator
                 RefreshGrid();
                 _btnExportJson.Enabled = _currentData.Count > 0;
                 _lblStatus.Text = $"Nuova riga {_entityName} aggiunta (non ancora scritta sul database).";
+            }
+        }
+
+        // Duplica la riga selezionata: la copia (id azzerato, quindi "Nuovo" in revisione) si apre
+        // nella finestra di creazione, dove basta cambiare il campo che differisce e premere "Crea".
+        private void BtnDuplicate_Click(object sender, EventArgs e)
+        {
+            T source = _grid.CurrentRow?.DataBoundItem as T;
+            if (source == null)
+            {
+                MessageBox.Show(this, "Seleziona prima la riga da duplicare.",
+                    "Nessuna riga selezionata", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            T copy = _clone(source);
+            _writerConfig.SetId(copy, 0);
+
+            using (var form = new SimpleEntityDetailForm<T>($"Duplica riga {_entityName}", copy, isNewMode: true))
+            {
+                if (form.ShowDialog(this) != DialogResult.OK)
+                {
+                    return;
+                }
+
+                _currentData.Add(copy);
+                RefreshGrid();
+                _btnExportJson.Enabled = _currentData.Count > 0;
+                _lblStatus.Text = $"Riga {_entityName} duplicata (non ancora scritta sul database).";
             }
         }
 

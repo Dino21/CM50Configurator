@@ -90,6 +90,40 @@ namespace CM50_Configurator
             }
         }
 
+        // Duplica la riga selezionata: apre la finestra di creazione già compilata con una copia
+        // (nuovo id), così basta cambiare il campo che differisce e confermare con "Crea". La copia
+        // resta solo in memoria finché non viene confermata con "Scrivi su DB...".
+        private void btnDuplicate_Click(object sender, EventArgs e)
+        {
+            var row = dgvUserCustomizations.CurrentRow?.DataBoundItem as GridRow;
+            if (row == null)
+            {
+                MessageBox.Show(this, "Seleziona prima la riga da duplicare.",
+                    "Nessuna riga selezionata", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            if (ReferenceDataCache.Products.Length == 0 || ReferenceDataCache.Clients.Length == 0)
+            {
+                MessageBox.Show(this, "Carica prima i dati dal database (Prodotti/Clienti non ancora disponibili).",
+                    "Dati non disponibili", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            using (var form = new NewUserCustomizationForm(row.Source))
+            {
+                if (form.ShowDialog(this) != DialogResult.OK)
+                {
+                    return;
+                }
+
+                _currentData.Add(form.NewItem);
+                BindGrid(_currentData);
+                btnExportJson.Enabled = _currentData.Count > 0;
+                lblStatus.Text = "Configurazione duplicata (non ancora scritta sul database).";
+            }
+        }
+
         private void btnBulkReplace_Click(object sender, EventArgs e)
         {
             if (_currentData.Count == 0)

@@ -60,6 +60,13 @@ namespace CM50_Configurator.Models
         [DisplayName("Tipo Allarme")]
         public string AlarmType { get; set; }
 
+        // Identità per id: serve a SimpleEntityDiff (che confronta con Equals) per non segnalare come
+        // modificata una riga solo perché il riferimento è un'istanza diversa con lo stesso id (es.
+        // scelto di nuovo dal dropdown, o deserializzato da un JSON importato).
+        public override bool Equals(object obj) => obj is Cm50ProdCode other && other.IdProductCode == IdProductCode;
+
+        public override int GetHashCode() => IdProductCode;
+
         public override string ToString() => $"{Code} - {Description}";
     }
 }
